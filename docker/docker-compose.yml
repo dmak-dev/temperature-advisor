@@ -1,0 +1,20 @@
+services:
+  temperature_app:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    container_name: temperature_app
+    volumes:
+      - ../src:/app/src:Z,ro
+    ports:
+      - "9030:9030"
+    restart: on-failure
+    environment:
+      PYTHONPATH: /app/src
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-1}
+    command: >
+      gunicorn
+      --pythonpath /app/src
+      --bind 0.0.0.0:9030
+      app.main:app
+      -w ${GUNICORN_WORKERS:-1}
